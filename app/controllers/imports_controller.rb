@@ -18,8 +18,11 @@ class ImportsController < ApplicationController
   end
 
   # below is what I'm posting, approximately
-  # Faraday.new.post do |request|
-  #   request.url 'http://abcdefg@localhost:3000/import'
+  # connection = Faraday.new
+  # connection.token_auth 'abcefg'
+
+  # connection.post do |request|
+  #   request.url 'http://localhost:3111/import'
   #   request.options[:timeout] = 5
   #   request.headers['Content-Type'] = 'application/json'
   #   request.body = {"item" => [1,2,3]}.to_json
@@ -28,10 +31,13 @@ class ImportsController < ApplicationController
   private
 
   def require_token
-    authenticate_with_http_basic do |token, _|
-      if token == 'abcdefg'
-        render nothing: true, status: :access_denied
-        false
+    puts "inside require_token"
+
+    authenticate_with_http_token do |token, _|
+      puts "inside http basic block: #{token}"
+
+      if token != 'abcdefg'
+        render nothing: true, status: :unauthorized and return false
       else
         true
       end
