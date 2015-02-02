@@ -6,8 +6,9 @@ class ImportsController < ApplicationController
     retailer_ics_id = retailer["ezport"].to_i - 30_000 # => 999 for our fictional retailer
 
     # optionally, in Thread.new { ... }
+    # any processing should be done in a background job
     params[:package].each do |model_name, collection|
-      klass = model_name.camelize.constantize # will find Item, etc.
+      klass = model_name.camelize.constantize rescue ExtractLogger # will find Item, etc.
 
       collection.each do |attributes|
         klass.create_from_import(attributes)
